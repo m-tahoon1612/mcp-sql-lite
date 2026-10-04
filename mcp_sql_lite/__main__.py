@@ -1,3 +1,4 @@
 from .server import serve
 
-serve()
+if __name__ == "__main__":
+    serve()
