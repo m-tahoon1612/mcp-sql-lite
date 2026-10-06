@@ -1,6 +1,7 @@
 """The tools the server exposes. Each returns plain python data."""
 import sqlite3
 
+from .safety import check_select, ensure_limit
 from .sample_data import SCHEMA
 
 TOOL_SPECS = [
@@ -16,6 +17,15 @@ TOOL_SPECS = [
             "type": "object",
             "properties": {"table": {"type": "string"}},
             "required": ["table"],
+        },
+    },
+    {
+        "name": "run_select",
+        "description": "Run a read-only SELECT. A LIMIT is added if missing (max 200 rows).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {"sql": {"type": "string"}},
+            "required": ["sql"],
         },
     },
 ]
@@ -44,7 +54,23 @@ def describe_table(conn: sqlite3.Connection, args: dict) -> dict:
     return {"table": table, "columns": cols, "sample": sample}
 
 
+def run_select(conn: sqlite3.Connection, args: dict) -> dict:
+    sql = args.get("sql") or ""
+    ok, reason = check_select(sql)
+    if not ok:
+        raise ToolError(f"query rejected: {reason}")
+    sql = ensure_limit(sql)
+    try:
+        cur = conn.execute(sql)
+    except sqlite3.Error as e:
+        raise ToolError(f"sqlite error: {e}") from None
+    names = [d[0] for d in cur.description or []]
+    rows = cur.fetchall()
+    return {"columns": names, "rows": [list(r) for r in rows], "row_count": len(rows)}
+
+
 HANDLERS = {
     "list_tables": list_tables,
     "describe_table": describe_table,
+    "run_select": run_select,
 }
