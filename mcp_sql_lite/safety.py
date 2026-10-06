@@ -28,7 +28,7 @@ def check_select(sql: str, max_limit: int = 200) -> tuple[bool, str]:
     """Return (ok, reason). ok=False means don't run it."""
     if not sql or not sql.strip():
         return False, "empty query"
-    clean = sql.strip().rstrip(";").strip()
+    clean = _strip(sql).strip().rstrip(";").strip()
     if ";" in clean:
         return False, "multiple statements not allowed"
     words = re.findall(r"[a-z_]+", clean.lower())
@@ -45,6 +45,6 @@ def check_select(sql: str, max_limit: int = 200) -> tuple[bool, str]:
 
 def ensure_limit(sql: str, default: int = 50) -> str:
     clean = sql.strip().rstrip(";")
-    if re.search(r"\blimit\s+\d+", clean, re.I):
+    if re.search(r"\blimit\s+\d+", _strip(clean), re.I):
         return clean
     return f"{clean} LIMIT {default}"
