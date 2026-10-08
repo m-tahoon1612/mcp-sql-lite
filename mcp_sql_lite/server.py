@@ -57,7 +57,8 @@ class Server:
             try:
                 data = HANDLERS[name](self.conn, params.get("arguments") or {})
             except ToolError as e:
-                raise _RpcError(-32000, str(e)) from None
+                # tool errors are results, not protocol errors - the model should see them
+                return {"content": [{"type": "text", "text": str(e)}], "isError": True}
             return {"content": [{"type": "text", "text": json.dumps(data, default=str)}],
                     "isError": False}
         raise _RpcError(-32601, f"method not found: {method}")
