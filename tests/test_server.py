@@ -1,3 +1,4 @@
+import io
 import json
 import unittest
 
@@ -48,6 +49,14 @@ class ServerTests(unittest.TestCase):
 
     def test_notification_no_response(self):
         self.assertIsNone(self.s.handle({"jsonrpc": "2.0", "method": "notifications/initialized"}))
+
+    def test_serve_loop(self):
+        inp = io.StringIO('{"jsonrpc":"2.0","id":1,"method":"ping"}\nnot json\n')
+        out = io.StringIO()
+        serve(inp, out)
+        lines = [json.loads(l) for l in out.getvalue().splitlines()]
+        self.assertEqual(lines[0], {"jsonrpc": "2.0", "id": 1, "result": {}})
+        self.assertEqual(lines[1]["error"]["code"], -32700)
 
 
 if __name__ == "__main__":
