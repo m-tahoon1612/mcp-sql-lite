@@ -1,0 +1,19 @@
+[project]
+name = "mcp-sql-lite"
+version = "0.1.0"
+description = "Minimal MCP-style stdio server exposing read-only SQL tools over a sample dataset"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Mohamed Tahoon" }]
+dependencies = []
+
+[project.scripts]
+mcp-sql-lite = "mcp_sql_lite.server:serve"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["mcp_sql_lite"]
