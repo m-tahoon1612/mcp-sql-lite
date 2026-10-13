@@ -57,8 +57,22 @@ retry. Protocol problems (unknown method, bad JSON) are JSON-RPC errors.
 - no write/DDL/admin keywords anywhere (`DELETE`, `ATTACH`, `PRAGMA`, ...)
 - `LIMIT` over 200 is rejected, missing `LIMIT` gets `LIMIT 50` appended
 
+## Limitations
+
+- Keyword checks, not a parser. It's conservative (a column called
+  `update_ts` is fine, but a bare word like `replace` in an identifier
+  gets rejected) and I wouldn't trust it as the only guard on real data.
+  Use a read-only DB user too.
+- Only the tools part of MCP: no resources, prompts, sampling, batching or
+  the HTTP transport. Protocol version is hardcoded.
+- Sample data only. Swapping in a real connection means replacing
+  `build_db()` and `SCHEMA`.
+- Single-threaded, one request at a time.
+
 ## Tests
 
 ```
 python -m unittest
 ```
+
+MIT licensed.
