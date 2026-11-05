@@ -1,4 +1,5 @@
 # mcp-sql-lite
+[![M8ven Score](https://m8ven.ai/badge/mcp/m-tahoon1612/mcp-sql-lite)](https://m8ven.ai/mcp/m-tahoon1612/mcp-sql-lite?s=readme)
 
 A small stdio server that gives an agent three read-only data tools:
 `list_tables`, `describe_table` and `run_select`. It speaks a subset of the
